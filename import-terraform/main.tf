@@ -5,9 +5,5 @@ resource "aws_instance" "name" {
         Name = "terraform-instance"
     }
 
-    lifecycle {
-        create_before_destroy = true
-    }
-
   
 }
