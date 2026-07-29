@@ -1,0 +1,67 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Jagadeesh0606/Terraform.git'
+            }
+        }
+
+        stage('Init') {
+            steps {
+                dir('terraform-configurations') {
+                    sh 'terraform init'
+                }
+            }
+        }
+
+        stage('Validate') {
+            steps {
+                dir('terraform-configurations') {
+                    sh 'terraform validate'
+                }
+            }
+        }
+
+        stage('Fmt Check') {
+            steps {
+                dir('terraform-configurations') {
+                    sh 'terraform fmt -check'
+                }
+            }
+        }
+
+        stage('Plan') {
+            steps {
+                dir('terraform-configurations') {
+                    sh 'terraform plan'
+                }
+            }
+        }
+
+        stage('Approval') {
+            steps {
+                input 'Approve Terraform Apply?'
+            }
+        }
+
+        stage('Apply') {
+            steps {
+                dir('terraform-configurations') {
+                    sh 'terraform apply -auto-approve'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Infrastructure provisioned successfully'
+        }
+
+        failure {
+            echo 'Terraform deployment failed'
+        }
+    }
+}
